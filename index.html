@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venezuela Libre</title>
     <style>
-        /* Estilo para hacer que el sitio sea responsive */
+        /* Estilo para hacer el sitio responsive */
         body, html {
             margin: 0;
             padding: 0;
@@ -24,13 +24,95 @@
             height: 90%;
         }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
     <script>
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_FIREBASE_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_FIREBASE_PROJECT_ID",
+            storageBucket: "YOUR_FIREBASE_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_FIREBASE_SENDER_ID",
+            appId: "YOUR_FIREBASE_APP_ID"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+
+        let map;
+
+        // Inicializar el mapa
         function initMap() {
             const venezuelaCoords = { lat: 6.4238, lng: -66.5897 }; // Coordenadas de Venezuela
-            const map = new google.maps.Map(document.getElementById("map"), {
+            map = new google.maps.Map(document.getElementById("map"), {
                 center: venezuelaCoords,
                 zoom: 6,
+            });
+
+            // Cargar marcadores desde Firestore
+            loadMarkersFromFirestore();
+
+            // Detectar clics en el mapa
+            map.addListener("click", (e) => {
+                const position = e.latLng;
+                addMarkerWithURL(position);
+            });
+        }
+
+        // Agregar un marcador con una URL
+        function addMarkerWithURL(position) {
+            const url = prompt("Ingrese la URL para este punto:");
+            if (url) {
+                // Crear marcador
+                const marker = new google.maps.Marker({
+                    position,
+                    map,
+                });
+
+                // Agregar evento para abrir la URL
+                marker.addListener("click", () => {
+                    window.open(url, "_blank");
+                });
+
+                // Guardar en Firestore
+                savePointToFirestore(position, url);
+            }
+        }
+
+        // Guardar puntos en Firestore
+        function savePointToFirestore(position, url) {
+            db.collection("mapPoints").add({
+                lat: position.lat(),
+                lng: position.lng(),
+                url: url,
+            }).then(() => {
+                console.log("Punto guardado en Firestore");
+            }).catch((error) => {
+                console.error("Error al guardar el punto: ", error);
+            });
+        }
+
+        // Cargar marcadores desde Firestore
+        function loadMarkersFromFirestore() {
+            db.collection("mapPoints").get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const position = { lat: data.lat, lng: data.lng };
+                    const marker = new google.maps.Marker({
+                        position,
+                        map,
+                    });
+
+                    // Agregar evento para abrir la URL
+                    marker.addListener("click", () => {
+                        window.open(data.url, "_blank");
+                    });
+                });
+            }).catch((error) => {
+                console.error("Error al cargar los puntos: ", error);
             });
         }
     </script>
