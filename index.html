@@ -84,6 +84,45 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+             /* Estilo del cuadro emergente para agregar URL */
+     #inputModal {
+         display: none;
+         position: fixed;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         background: white;
+         padding: 20px;
+         border-radius: 8px;
+         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+         z-index: 1000;
+         width: 80%;
+         max-width: 400px;
+     }
+
+     #urlInput {
+         width: 100%;
+         padding: 10px;
+         margin-bottom: 10px;
+         border: 1px solid #ddd;
+         border-radius: 5px;
+     }
+
+     #addMarkerBtn, #closeInputModal {
+         padding: 10px 20px;
+         margin: 5px;
+         background: #333;
+         color: white;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+     }
+
+     #closeInputModal {
+         background: #aaa;
+     }
+
     </style>
 </head>
 <body>
@@ -99,6 +138,12 @@
     <div id="videoModal">
         <iframe id="videoFrame" src="" allowfullscreen></iframe>
         <button id="closeModal">Cerrar</button>
+    </div>
+    <!-- Modal para agregar URL -->
+    <div id="inputModal">
+        <input id="urlInput" type="text" placeholder="Introduce el URL del video" />
+        <button id="addMarkerBtn">Agregar Marcador</button>
+        <button id="closeInputModal">Cancelar</button>
     </div>
 
     <script>
@@ -131,6 +176,13 @@
                     url: "https://x.com/VPITV/status/1877429003549581555/video/1 " 
                 },
             ];
+            let currentLatLng = null; // Almacena la posición del clic en el mapa
+
+            // Evento para crear un nuevo marcador al hacer clic en el mapa
+            map.addListener("click", (event) => {
+                currentLatLng = event.latLng; // Guarda la posición del clic
+                document.getElementById("inputModal").style.display = "block";
+            });
 
             markersData.forEach((data) => {
                 const marker = new google.maps.Marker({
@@ -156,6 +208,42 @@
         }
 
         window.initMap = initMap;
+
+        // Agregar marcador con URL al mapa
+        function addMarkerWithUrl(latLng, url) {
+                const marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map,
+                    title: "Nuevo marcador",
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<a href="#" class="open-modal" data-url="${url}">Ver video</a>`,
+                });
+
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+        }
+
+        // Controladores para los botones del modal
+        document.getElementById("addMarkerBtn").addEventListener("click", () => {
+                const url = document.getElementById("urlInput").value.trim();
+                if (url && currentLatLng) {
+                    addMarkerWithUrl(currentLatLng, url);
+                    closeInputModal();
+                } else {
+                    alert("Por favor, introduce un URL válido.");
+                }
+        });
+
+        document.getElementById("closeInputModal").addEventListener("click", closeInputModal);
+
+            function closeInputModal() {
+                document.getElementById("inputModal").style.display = "none";
+                document.getElementById("urlInput").value = "";
+                currentLatLng = null;
+        }
 
         // Función para abrir el modal
         document.addEventListener("click", function(event) {
