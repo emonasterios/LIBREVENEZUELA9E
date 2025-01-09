@@ -163,12 +163,11 @@
                     if (!response.ok) {
                         throw new Error(`Error en la API de oEmbed: ${response.statusText}`);
                     }
-
                     const data = await response.json(); // Procesar el JSON devuelto por la API
 
-                    // Insertar el HTML generado en el modal
+                    // Insertar el HTML del tweet en el modal
                     const modalContainer = document.getElementById("videoModalContent");
-                    modalContainer.innerHTML = data.html; // `data.html` contiene el contenido HTML para incrustar el tweet
+                    modalContainer.innerHTML = data.html;
 
                     // Mostrar el modal
                     document.getElementById("modalOverlay").style.display = "block";
@@ -186,6 +185,7 @@
                 document.getElementById("videoModal").style.display = "none";
             }
         });
+
 
 
 
