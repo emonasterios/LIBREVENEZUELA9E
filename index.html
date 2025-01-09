@@ -137,9 +137,10 @@
     <div id="modalOverlay"></div>
 
     <div id="videoModal">
-        <iframe id="videoFrame" src="" allowfullscreen></iframe>
+        <div id="videoModalContent"></div>
         <button id="closeModal">Cerrar</button>
     </div>
+    
 
     <!-- Modal para agregar URL -->
     <div id="inputModal">
@@ -156,19 +157,17 @@
                 event.preventDefault();
                 const videoUrl = event.target.getAttribute("data-url");
 
-                // Generar el contenido del widget
-                const tweetContainer = document.getElementById("tweetContainer");
-                tweetContainer.innerHTML = `
+                // Generar contenido del modal
+                const modalContent = `
                     <blockquote class="twitter-tweet">
                         <a href="${videoUrl}"></a>
                     </blockquote>
+                    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 `;
 
-                // Cargar el script de X para inicializar el widget
-                const script = document.createElement("script");
-                script.src = "https://platform.twitter.com/widgets.js";
-                script.async = true;
-                tweetContainer.appendChild(script);
+                // Insertar contenido en el modal
+                const modalContainer = document.getElementById("videoModalContent");
+                modalContainer.innerHTML = modalContent;
 
                 // Mostrar el modal
                 document.getElementById("modalOverlay").style.display = "block";
@@ -176,12 +175,12 @@
             }
 
             if (event.target.matches("#closeModal")) {
-                const tweetContainer = document.getElementById("tweetContainer");
-                tweetContainer.innerHTML = ""; // Limpiar el contenido al cerrar el modal
+                document.getElementById("videoModalContent").innerHTML = ""; // Limpiar contenido
                 document.getElementById("modalOverlay").style.display = "none";
                 document.getElementById("videoModal").style.display = "none";
             }
         });
+
 
         async function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
