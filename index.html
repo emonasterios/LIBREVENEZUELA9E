@@ -1,80 +1,72 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <title>Mapa con Marcadores desde Firestore</title>
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-      import {
-        getFirestore,
-        collection,
-        getDocs,
-      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-      // Configuración de Firestore
+    <title>Mapa con Marcadores y Tweets</title>
+    <script>
+      let map;
       const firebaseConfig = {
         apiKey: "AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI",
+        authDomain: "venezuelalibre9e.firebaseapp.com",
         projectId: "venezuelalibre9e",
+        storageBucket: "venezuelalibre9e.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
       };
 
-      // Inicializar Firestore
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
 
-      // Función para inicializar el mapa
-      async function initMap() {
-        const map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 8.0, lng: -66.0 }, // Centro inicial del mapa (Venezuela)
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 8.0, lng: -66.0 },
           zoom: 6,
         });
 
-        // Leer documentos de la colección "markers" en Firestore
-        const querySnapshot = await getDocs(collection(db, "markers"));
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
+        db.collection("markers").get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const marker = new google.maps.Marker({
+              position: { lat: data.lat, lng: data.lng },
+              map,
+              title: data.title,
+            });
 
-          // Crear marcador para cada documento
-          const marker = new google.maps.Marker({
-            position: { lat: data.lat, lng: data.lng },
-            map,
-            title: data.title,
-          });
+            const infoWindow = new google.maps.InfoWindow({
+              content: `<div><h1>${data.title}</h1><p>${data.content}</p><a href='${data.url}' target='_blank'>Ver en Twitter</a></div>`
+            });
 
-          // Agregar una ventana de información
-          const infoWindow = new google.maps.InfoWindow({
-            content: `<h3>${data.title}</h3><p>${data.content}</p>`,
-          });
-
-          // Abrir la ventana de información al hacer clic en el marcador
-          marker.addListener("click", () => {
-            infoWindow.open(map, marker);
+            marker.addListener("click", () => {
+              infoWindow.open(map, marker);
+            });
           });
         });
       }
-
-      // Exponer initMap al objeto global
-      window.initMap = initMap;
     </script>
     <style>
-      /* Estilos básicos */
-      html,
-      body {
+      #map {
+        height: 100%;
+      }
+
+      html, body {
         height: 100%;
         margin: 0;
         padding: 0;
       }
-      #map {
-        height: 100%;
+
+      h1 {
+        text-align: center;
+        font-family: Arial, sans-serif;
       }
     </style>
   </head>
   <body>
-    <!-- Contenedor del mapa -->
+    <h1>Mapa con Información de Marcadores</h1>
     <div id="map"></div>
-
-    <!-- Carga la API de Google Maps -->
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI&callback=initMap"
-      defer
+      async
     ></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
   </body>
 </html>
