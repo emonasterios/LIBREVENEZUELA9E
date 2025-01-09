@@ -40,6 +40,50 @@
                 height: 300px;
             }
         }
+
+        /* Estilo del cuadro emergente */
+        #videoModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        #videoModal iframe {
+            width: 100%;
+            height: 315px;
+            border: none;
+        }
+
+        #modalOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        #closeModal {
+            display: block;
+            margin: 10px auto 0;
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -50,43 +94,46 @@
         <div id="map"></div>
     </div>
 
+    <!-- Modal para el video -->
+    <div id="modalOverlay"></div>
+    <div id="videoModal">
+        <iframe id="videoFrame" src="" allowfullscreen></iframe>
+        <button id="closeModal">Cerrar</button>
+    </div>
+
     <script>
-        // Clave de Google Maps API
         const GOOGLE_MAPS_API_KEY = "AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI";
 
-        // Inicializar mapa
         async function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: 8.0, lng: -66.0 },
                 zoom: 6,
             });
 
-            // Datos de marcadores con enlaces a videos
             const markersData = [
                 { 
                     lat: 8.591, 
                     lng: -70.2484, 
                     title: "Mérida", 
-                    content: "https://x.com/VPITV/status/1877429003549581555", 
-                    url: "https://x.com/VPITV/status/1877429003549581555/video/1" 
+                    content: "Ciudad andina", 
+                    url: "https://www.youtube.com/embed/dQw4w9WgXcQ" 
                 },
                 { 
                     lat: 10.4806, 
                     lng: -66.9036, 
                     title: "Caracas", 
                     content: "Capital de Venezuela", 
-                    url: "https://x.com/VPITV/status/1877429003549581555/video/1" 
+                    url: "https://www.youtube.com/embed/dQw4w9WgXcQ" 
                 },
                 { 
                     lat: 8.299, 
                     lng: -62.717, 
                     title: "Ciudad Guayana", 
                     content: "Zona industrial importante", 
-                    url: "https://x.com/VPITV/status/1877429003549581555/video/1" 
+                    url: "https://www.youtube.com/embed/dQw4w9WgXcQ" 
                 },
             ];
 
-            // Crear marcadores y ventanas emergentes
             markersData.forEach((data) => {
                 const marker = new google.maps.Marker({
                     position: { lat: data.lat, lng: data.lng },
@@ -94,12 +141,11 @@
                     title: data.title,
                 });
 
-                // Ventana emergente con enlace al video
                 const infoWindow = new google.maps.InfoWindow({
                     content: `
                         <h3>${data.title}</h3>
                         <p>${data.content}</p>
-                        <a href="${data.url}" target="_blank">Ver video</a>
+                        <a href="#" class="open-modal" data-url="${data.url}">Ver video</a>
                     `,
                 });
 
@@ -110,10 +156,24 @@
         }
 
         window.initMap = initMap;
-    </script>
 
-    <!-- Script de Google Maps con clave desde variable -->
-    <script>
+        // Función para abrir el modal
+        document.addEventListener("click", function(event) {
+            if (event.target.matches(".open-modal")) {
+                event.preventDefault();
+                const videoUrl = event.target.getAttribute("data-url");
+                document.getElementById("videoFrame").src = videoUrl;
+                document.getElementById("modalOverlay").style.display = "block";
+                document.getElementById("videoModal").style.display = "block";
+            }
+
+            if (event.target.matches("#closeModal")) {
+                document.getElementById("videoFrame").src = "";
+                document.getElementById("modalOverlay").style.display = "none";
+                document.getElementById("videoModal").style.display = "none";
+            }
+        });
+
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap`;
         script.async = true;
