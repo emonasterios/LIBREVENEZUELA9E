@@ -165,7 +165,9 @@
                     if (!response.ok) {
                         throw new Error(`Error en la API de oEmbed: ${response.statusText}`);
                     }
-                    const data = await response.json(); // Procesar el JSON devuelto por la API
+                    const data = await response.json(); 
+                    
+                    // Procesar el JSON devuelto por la API
 
                     // Insertar el contenido del tweet en el modal
                     const modalContainer = document.getElementById("videoModalContent");
