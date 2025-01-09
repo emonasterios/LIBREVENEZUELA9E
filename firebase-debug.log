@@ -1,0 +1,44 @@
+[debug] [2025-01-09T17:51:24.983Z] ----------------------------------------------------------------------
+[debug] [2025-01-09T17:51:24.986Z] Command:       /usr/local/nvm/versions/node/v22.12.0/bin/node /usr/local/node_packages/node_modules/.bin/firebase projects:addfirebase venezuelalibre9e
+[debug] [2025-01-09T17:51:24.986Z] CLI Version:   13.28.0
+[debug] [2025-01-09T17:51:24.986Z] Platform:      linux
+[debug] [2025-01-09T17:51:24.987Z] Node Version:  v22.12.0
+[debug] [2025-01-09T17:51:24.987Z] Time:          Thu Jan 09 2025 17:51:24 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-01-09T17:51:24.987Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-01-09T17:51:24.994Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-01-09T17:51:24.995Z] > authorizing via signed-in user (emonasterios@gmail.com)
+[debug] [2025-01-09T17:51:25.000Z] Checked if tokens are valid: true, expires at: 1736448656052
+[debug] [2025-01-09T17:51:25.000Z] Checked if tokens are valid: true, expires at: 1736448656052
+[debug] [2025-01-09T17:51:25.002Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase [none]
+[debug] [2025-01-09T17:51:25.300Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase 403
+[debug] [2025-01-09T17:51:25.300Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-01-09T17:51:25.301Z] Request to https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase had HTTP Error: 403, The caller does not have permission
+[debug] [2025-01-09T17:51:25.319Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase had HTTP Error: 403, The caller does not have permission
+    at responseToError (/usr/local/node_packages/node_modules/firebase-tools/lib/responseToError.js:52:12)
+    at RetryOperation._fn (/usr/local/node_packages/node_modules/firebase-tools/lib/apiv2.js:312:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[error] 
+[error] Error: Failed to add Firebase to Google Cloud Platform project. See firebase-debug.log for more info.
+[debug] [2025-01-09T17:52:29.329Z] ----------------------------------------------------------------------
+[debug] [2025-01-09T17:52:29.331Z] Command:       /usr/local/nvm/versions/node/v22.12.0/bin/node /usr/local/node_packages/node_modules/.bin/firebase projects:addfirebase venezuelalibre9e
+[debug] [2025-01-09T17:52:29.332Z] CLI Version:   13.28.0
+[debug] [2025-01-09T17:52:29.332Z] Platform:      linux
+[debug] [2025-01-09T17:52:29.332Z] Node Version:  v22.12.0
+[debug] [2025-01-09T17:52:29.332Z] Time:          Thu Jan 09 2025 17:52:29 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-01-09T17:52:29.333Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-01-09T17:52:29.340Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-01-09T17:52:29.341Z] > authorizing via signed-in user (emonasterios@gmail.com)
+[debug] [2025-01-09T17:52:29.346Z] Checked if tokens are valid: true, expires at: 1736448656052
+[debug] [2025-01-09T17:52:29.346Z] Checked if tokens are valid: true, expires at: 1736448656052
+[debug] [2025-01-09T17:52:29.348Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase [none]
+[debug] [2025-01-09T17:52:29.693Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase 403
+[debug] [2025-01-09T17:52:29.693Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-01-09T17:52:29.694Z] Request to https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase had HTTP Error: 403, The caller does not have permission
+[debug] [2025-01-09T17:52:29.714Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/venezuelalibre9e:addFirebase had HTTP Error: 403, The caller does not have permission
+    at responseToError (/usr/local/node_packages/node_modules/firebase-tools/lib/responseToError.js:52:12)
+    at RetryOperation._fn (/usr/local/node_packages/node_modules/firebase-tools/lib/apiv2.js:312:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[error] 
+[error] Error: Failed to add Firebase to Google Cloud Platform project. See firebase-debug.log for more info.

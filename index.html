@@ -1,124 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venezuela Libre</title>
-    <style>
-        /* Estilo para hacer el sitio responsive */
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-        }
-        h1 {
-            text-align: center;
-            margin: 20px;
-            font-size: 2rem;
-            color: #333;
-        }
-        #map {
-            width: 100%;
-            height: 90%;
-        }
-    </style>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
-    <!-- Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
-    <script>
-        // Configuración de Firebase
-        const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY",
-            authDomain: "YOUR_FIREBASE_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_FIREBASE_PROJECT_ID",
-            storageBucket: "YOUR_FIREBASE_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_FIREBASE_SENDER_ID",
-            appId: "YOUR_FIREBASE_APP_ID"
-        };
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(app);
+<html>
+  <head>
+    <title>Mapa con Marcadores desde Firestore</title>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        let map;
+      // Configuración de Firestore
+      const firebaseConfig = {
+        apiKey: "AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI",
+        projectId: "venezuelalibre9e",
+      };
 
-        // Inicializar el mapa
-        function initMap() {
-            const venezuelaCoords = { lat: 6.4238, lng: -66.5897 }; // Coordenadas de Venezuela
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: venezuelaCoords,
-                zoom: 6,
-            });
+      // Inicializar Firestore
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-            // Cargar marcadores desde Firestore
-            loadMarkersFromFirestore();
+      // Función para inicializar el mapa
+      async function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 8.0, lng: -66.0 }, // Centro inicial del mapa (Venezuela)
+          zoom: 6,
+        });
 
-            // Detectar clics en el mapa
-            map.addListener("click", (e) => {
-                const position = e.latLng;
-                addMarkerWithURL(position);
-            });
-        }
+        // Leer documentos de la colección "markers" en Firestore
+        const querySnapshot = await getDocs(collection(db, "markers"));
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
 
-        // Agregar un marcador con una URL
-        function addMarkerWithURL(position) {
-            const url = prompt("Ingrese la URL para este punto:");
-            if (url) {
-                // Crear marcador
-                const marker = new google.maps.Marker({
-                    position,
-                    map,
-                });
+          // Crear marcador para cada documento
+          const marker = new google.maps.Marker({
+            position: { lat: data.lat, lng: data.lng },
+            map,
+            title: data.title,
+          });
 
-                // Agregar evento para abrir la URL
-                marker.addListener("click", () => {
-                    window.open(url, "_blank");
-                });
+          // Agregar una ventana de información
+          const infoWindow = new google.maps.InfoWindow({
+            content: `<h3>${data.title}</h3><p>${data.content}</p>`,
+          });
 
-                // Guardar en Firestore
-                savePointToFirestore(position, url);
-            }
-        }
+          // Abrir la ventana de información al hacer clic en el marcador
+          marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+          });
+        });
+      }
 
-        // Guardar puntos en Firestore
-        function savePointToFirestore(position, url) {
-            db.collection("mapPoints").add({
-                lat: position.lat(),
-                lng: position.lng(),
-                url: url,
-            }).then(() => {
-                console.log("Punto guardado en Firestore");
-            }).catch((error) => {
-                console.error("Error al guardar el punto: ", error);
-            });
-        }
-
-        // Cargar marcadores desde Firestore
-        function loadMarkersFromFirestore() {
-            db.collection("mapPoints").get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const position = { lat: data.lat, lng: data.lng };
-                    const marker = new google.maps.Marker({
-                        position,
-                        map,
-                    });
-
-                    // Agregar evento para abrir la URL
-                    marker.addListener("click", () => {
-                        window.open(data.url, "_blank");
-                    });
-                });
-            }).catch((error) => {
-                console.error("Error al cargar los puntos: ", error);
-            });
-        }
+      // Exponer initMap al objeto global
+      window.initMap = initMap;
     </script>
-</head>
-<body onload="initMap()">
-    <h1>Venezuela Libre</h1>
+    <style>
+      /* Estilos básicos */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Contenedor del mapa -->
     <div id="map"></div>
-</body>
+
+    <!-- Carga la API de Google Maps -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI&callback=initMap"
+      defer
+    ></script>
+  </body>
 </html>
