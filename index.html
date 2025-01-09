@@ -1,72 +1,123 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Mapa con Marcadores y Tweets</title>
-    <script>
-      let map;
-      const firebaseConfig = {
-        apiKey: "AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI",
-        authDomain: "venezuelalibre9e.firebaseapp.com",
-        projectId: "venezuelalibre9e",
-        storageBucket: "venezuelalibre9e.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.firestore();
-
-      function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 8.0, lng: -66.0 },
-          zoom: 6,
-        });
-
-        db.collection("markers").get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const marker = new google.maps.Marker({
-              position: { lat: data.lat, lng: data.lng },
-              map,
-              title: data.title,
-            });
-
-            const infoWindow = new google.maps.InfoWindow({
-              content: `<div><h1>${data.title}</h1><p>${data.content}</p><a href='${data.url}' target='_blank'>Ver en Twitter</a></div>`
-            });
-
-            marker.addListener("click", () => {
-              infoWindow.open(map, marker);
-            });
-          });
-        });
-      }
-    </script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VENEZUELA LIBRE E10</title>
     <style>
-      #map {
-        height: 100%;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
 
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 15px 0;
+            font-size: 1.5rem;
+        }
 
-      h1 {
-        text-align: center;
-        font-family: Arial, sans-serif;
-      }
+        #map-container {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #map {
+            width: 100%;
+            height: 500px;
+        }
+
+        @media screen and (max-width: 600px) {
+            #map {
+                height: 300px;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <h1>Mapa con Información de Marcadores</h1>
-    <div id="map"></div>
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI&callback=initMap"
-      async
-    ></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-  </body>
+</head>
+<body>
+    <header>
+        VENEZUELA LIBRE E10
+    </header>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script>
+        // Clave de Google Maps API
+        const GOOGLE_MAPS_API_KEY = "AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI";
+
+        // Inicializar mapa
+        async function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 8.0, lng: -66.0 },
+                zoom: 6,
+            });
+
+            // Datos de marcadores con enlaces a videos
+            const markersData = [
+                { 
+                    lat: 8.591, 
+                    lng: -70.2484, 
+                    title: "Mérida", 
+                    content: "Ciudad andina", 
+                    url: "https://x.com/VPITV/status/1877429003549581555" 
+                },
+                { 
+                    lat: 10.4806, 
+                    lng: -66.9036, 
+                    title: "Caracas", 
+                    content: "Capital de Venezuela", 
+                    url: "https://x.com/another-video-link" 
+                },
+                { 
+                    lat: 8.299, 
+                    lng: -62.717, 
+                    title: "Ciudad Guayana", 
+                    content: "Zona industrial importante", 
+                    url: "https://x.com/example-video-link" 
+                },
+            ];
+
+            // Crear marcadores y ventanas emergentes
+            markersData.forEach((data) => {
+                const marker = new google.maps.Marker({
+                    position: { lat: data.lat, lng: data.lng },
+                    map: map,
+                    title: data.title,
+                });
+
+                // Ventana emergente con enlace al video
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `
+                        <h3>${data.title}</h3>
+                        <p>${data.content}</p>
+                        <a href="${data.url}" target="_blank">Ver video</a>
+                    `,
+                });
+
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        window.initMap = initMap;
+    </script>
+
+    <!-- Script de Google Maps con clave desde variable -->
+    <script>
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap`;
+        script.async = true;
+        document.head.appendChild(script);
+    </script>
+</body>
 </html>
