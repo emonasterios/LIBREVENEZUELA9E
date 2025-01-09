@@ -140,11 +140,13 @@
                 });
 
                 const infoWindow = new google.maps.InfoWindow({
-                    content: 
-                        <h3>${data.title}</h3>
-                        <p>${data.content}</p>
-                        <a href="#" class="open-modal" data-url="${data.url}">Ver video</a>
-                    ,
+                    content: `<div>
+                                <h3>${data.title}</h3>
+                                <p>${data.content}</p>
+                                <a href="#" class="open-modal" data-url="${data.url}">Ver video</a>
+                              </div>`
+                    
+                    
                 });
 
                 marker.addListener("click", () => {
@@ -173,7 +175,7 @@
         });
 
         const script = document.createElement("script");
-        script.src = https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=initMap`;
         script.async = true;
         document.head.appendChild(script);
     </script>
