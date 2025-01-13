@@ -143,42 +143,66 @@
     <script>
         const GOOGLE_MAPS_API_KEY = "AIzaSyA94W_iBzKYoglvT8BK3sh96ydkMLdLqsI";
 
+        async function fetchMarkers() {
+            try {
+                const response = await fetch('https://venezuelalibre-backend-602998840579.us-central1.run.app/markers');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching markers from backend:", error);
+                return [];
+            }
+        }
+        
         async function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: 8.0, lng: -66.0 },
                 zoom: 6,
             });
 
+            // Add static markers from markersData
             const markersData = [
                 { lat: 8.591, lng: -70.2484, url: "https://x.com/MariaCorinaYA/status/1877425078402462052" },
                 { lat: 10.4806, lng: -66.9036, url: "https://x.com/ALERTA911PANAMA/status/1877468756366041510" },
                 { lat: 8.299, lng: -62.717, url: "https://x.com/ALERTA911PANAMA/status/1877468756366041510" },
             ];
 
-            let currentLatLng = null;
-
-            map.addListener("click", (event) => {
-                currentLatLng = event.latLng;
-                document.getElementById("inputModal").style.display = "block";
-            });
-
+            // Add static markers from markersData
             markersData.forEach((data) => {
                 addMarkerWithUrl(map, { lat: data.lat, lng: data.lng }, data.url);
             });
 
-            function addMarkerWithUrl(map, latLng, url) {
-                const marker = new google.maps.Marker({
-                    position: latLng,
-                    map: map,
-                });
+            // Fetch and add markers from the backend
+            const backendMarkers = await fetchMarkers();
+            backendMarkers.forEach((data) => {
+                addMarkerWithUrl(map, { lat: data.lat, lng: data.lng }, data.url);
+            });
 
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `<a href="#" class="open-modal" data-url="${url}">Ver video</a>`,
-                });
+            // Add click listener for adding new markers
+            map.addListener("click", (event) => {
+                currentLatLng = event.latLng;
+                const url = prompt("Enter video URL:");
+                if (url) {
+                    addMarkerWithUrl(map, currentLatLng, url);
+                    addMarkerToBackend(currentLatLng.lat(), currentLatLng.lng(), url);
+                }
+            });
+        }
 
-                marker.addListener("click", () => {
-                    infoWindow.open(map, marker);
+        async function addMarkerToBackend(lat, lng, url) {
+            try {
+                const response = await fetch('https://venezuelalibre-backend-602998840579.us-central1.run.app/add-marker', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ lat, lng, url }),
                 });
+                if (!response.ok) {
+                    throw new Error("Failed to save marker to backend");
+                }
+            } catch (error) {
+                console.error("Error saving marker to backend:", error);
             }
         }
 
